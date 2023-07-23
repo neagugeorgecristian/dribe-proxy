@@ -17,6 +17,11 @@ async function fetchData() {
   } else {
     try {
       const response = await axios.get(apiUrl);
+
+      if (!response || !response.data) {
+        throw new Error('Invalid response from API');
+      }
+
       cache.set('random-data', response.data);
       console.log('Data served from API');
       return response.data;
@@ -27,7 +32,7 @@ async function fetchData() {
   }
 }
 
-// Custom error handling middleware due to getting 404 when testing
+// Custom error handling middleware due to the need of more explicit errors when testing
 function errorHandler(err, req, res, next) {
   console.error('Error:', err.message);
   res.status(500).json({ error: err.message });
@@ -56,3 +61,5 @@ app.use(errorHandler);
 app.listen(3000, () => {
   console.log('Proxy server is running on http://localhost:3000');
 });
+
+module.exports = fetchData; // Export the fetchData function (necessary for testing)
